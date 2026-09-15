@@ -1,8 +1,14 @@
 using System;
 
-double weight = double.Parse(Console.ReadLine());
-double height = double.Parse(Console.ReadLine());
+public static class Task1
+{
+    public static void Run()
+    {
+        double weight = double.Parse(Console.ReadLine());
+        double height = double.Parse(Console.ReadLine());
 
-double bmi = weight / (height * height);
+        double bmi = weight / (height * height);
 
-Console.WriteLine($"BMI: {bmi:F} kg/m^2");
+        Console.WriteLine($"BMI: {bmi:F2} kg/m^2");
+    }
+}
