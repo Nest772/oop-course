@@ -14,7 +14,7 @@ public static class Task5
             4 => "thursday 08:00 - 18:00",
             5 => "friday 08:00 - 18:00",
             6 => "saturday 08:00 - 18:00",
-            7 => "sunday 08:00 - 18:00",
+            7 => "sunday - day off",
             _ => "incorrect number of day"
         };
 
