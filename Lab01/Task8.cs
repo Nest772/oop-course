@@ -41,10 +41,10 @@ public static class Task8
 
     public static string getBMICategory(double bmi)
     {
-        if (bmi < 18.5) return "недостатня вага";
-        if (bmi < 25.0) return "норма";
-        if (bmi < 30.0) return "надмірна вага";
-        return "ожиріння";
+        if (bmi < 18.5) return "overweight";
+        if (bmi < 25.0) return "norm";
+        if (bmi < 30.0) return "overweight";
+        return "obese";
     }
 
     public static double calculateCost(double price, int quantity, int sale)
