@@ -1,9 +1,15 @@
 using System;
 
-double price = double.Parse(Console.ReadLine());
-int quantity = int.Parse(Console.ReadLine());
-int sale = int.Parse(Console.ReadLine());
+public static class Task2
+{
+    public static void Run()
+    {
+        double price = double.Parse(Console.ReadLine());
+        int quantity = int.Parse(Console.ReadLine());
+        int sale = int.Parse(Console.ReadLine());
 
-double sum = price * quantity * (1 - (double)sale / 100);
+        double sum = price * quantity * (1 - (double)sale / 100);
 
-Console.WriteLine($"Sum: {sum:F2}");
+        Console.WriteLine($"Sum: {sum:F2}");
+    }
+}
