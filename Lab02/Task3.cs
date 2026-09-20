@@ -1,12 +1,15 @@
 using System;
+using System.Globalization;
+using System.Threading;
 
-System.Threading.Thread.CurrentThread.CurrentCulture =
-System.Globalization.CultureInfo.InvariantCulture;
+namespace Lab02;
 
-public static class Task3
+public class Task3
 {
     public static void Run()
     {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
         string[] days = { "Md", "Td", "Wd", "Thd", "Fd", "Std", "Sd" };
         int[] counts = new int[7];
 
@@ -50,6 +53,9 @@ public static class Task3
 
         Console.WriteLine($"Overall: {total}");
         Console.WriteLine($"Busiest: {days[maxIdx]} ({counts[maxIdx]})");
+        Console.WriteLine($"Quietest: {days[minIdx]} ({counts[minIdx]})");
+    }
+}($"Busiest: {days[maxIdx]} ({counts[maxIdx]})");
         Console.WriteLine($"Quietest: {days[minIdx]} ({counts[minIdx]})");
     }
 }
