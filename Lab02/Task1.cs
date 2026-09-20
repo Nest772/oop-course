@@ -1,13 +1,16 @@
 using System;
+using System.Globalization;
+using System.Threading;
 
-System.Threading.Thread.CurrentThread.CurrentCulture =
-System.Globalization.CultureInfo.InvariantCulture;
+namespace Lab02;
 
-public static class Task1
+public class Task1
 {
 
     public static void Run()
     {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
         int N = int.Parse(Console.ReadLine());
         double[] weights = new double[N];
 
@@ -39,6 +42,12 @@ public static class Task1
                 countAboveAverage++;
             }
         }
+
+
+
+        Console.WriteLine($"Amount: {N}     / Average weight: {average:F1} kg / Min/Max:{min:F1}/{max:F1} kg / Above average:{countAboveAverage} from {N}");
+    }
+}
 
 
 
