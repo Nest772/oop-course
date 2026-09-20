@@ -1,13 +1,14 @@
 using System;
+using System.Globalization;
+using System.Threading;
 
-System.Threading.Thread.CurrentThread.CurrentCulture =
-System.Globalization.CultureInfo.InvariantCulture;
+namespace Lab02;
 
-public static class Task2
+public class Task2
 {
     public static void Run()
     {
-
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         
         int N = int.Parse(Console.ReadLine());
         int[] price = new int[N];
@@ -34,6 +35,11 @@ public static class Task2
 
         string after = string.Join(" ", price);
         Console.WriteLine($"After: {after}");
+
+        Console.WriteLine($"the Cheapest: {price[0]} grn");
+        Console.WriteLine($"The most expensive: {price[^1]} grn");
+    }
+}
 
         Console.WriteLine($"the Cheapest: {price[0]} grn");
         Console.WriteLine($"The most expensive: {price[^1]} grn");
