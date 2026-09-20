@@ -1,13 +1,15 @@
 using System;
+using System.Globalization;
+using System.Threading;
 
-System.Threading.Thread.CurrentThread.CurrentCulture =
-System.Globalization.CultureInfo.InvariantCulture;
+namespace Lab02;
 
-
-public static class Task5
+public class Task5
 {
     public static void Run ()
     {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
         int N = int.Parse(Console.ReadLine());
 
         int[,] matrix = new int[N, N];
