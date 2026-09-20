@@ -1,12 +1,15 @@
 using System;
+using System.Globalization;
+using System.Threading;
 
-System.Threading.Thread.CurrentThread.CurrentCulture =
-System.Globalization.CultureInfo.InvariantCulture;
+namespace Lab02;
 
-public static class Task4
+public class Task4
 {
     public static void Run()
     {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
         int N = int.Parse(Console.ReadLine());
         int M = int.Parse(Console.ReadLine());
 
