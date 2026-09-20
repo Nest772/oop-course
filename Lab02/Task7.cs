@@ -4,59 +4,43 @@ using System.Threading;
 
 namespace Lab02;
 
-public class Task8
+public class Task7
 {
     public static void Run()
     {
         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-        int D = int.Parse(Console.ReadLine());
-        int W = int.Parse(Console.ReadLine());
+        int N = int.Parse(Console.ReadLine());
 
-        int[,,] data = new int[D, W, 2];
 
-        for (int d = 0; d < D; d++)
+        string[] names = new string[N];
+        double[] bmis = new double[N];
+
+
+        for (int i = 0; i < N; i++)
         {
-            for (int w = 0; w < W; w++)
+            names[i] = Console.ReadLine();
+            bmis[i] = double.Parse(Console.ReadLine());
+        }
+
+
+        for (int i = 0; i < N - 1; i++)
+        {
+            for (int j = 0; j < N - 1 - i; j++)
             {
-                for (int s = 0; s < 2; s++)
+                if (bmis[j] < bmis[j + 1])
                 {
-                    data[d, w, s] = int.Parse(Console.ReadLine());
+                    (bmis[j], bmis[j + 1]) = (bmis[j + 1], bmis[j]);
+
+                    (names[j], names[j + 1]) = (names[j + 1], names[j]);
                 }
             }
         }
 
-
-        int[] depTotals = new int[D];
-        int maxDepIdx = 0;
-
-        for (int d = 0; d < D; d++)
+        Console.WriteLine("=== BMI RATING ===");
+        for (int i = 0; i < N; i++)
         {
-            Console.WriteLine($"Department{d + 1}:");
-            int depTotal = 0;
-
-            for (int w = 0; w < W; w++)
-            {
-                int morning = data[d, w, 0];
-                int evening = data[d, w, 1];
-                int weekTotal = morning + evening;
-
-                depTotal += weekTotal;
-
-                Console.WriteLine($"week {w + 1}: morning{morning}, evening {evening} -> together {weekTotal}");
-            }
-
-            depTotals[d] = depTotal;
-            Console.WriteLine($"  Together: {depTotal} patients");
-
-
-            if (depTotals[d] > depTotals[maxDepIdx])
-            {
-                maxDepIdx = d;
-            }
+            Console.WriteLine($"#{i + 1} {names[i]}: {bmis[i]:F2}");
         }
-
-
-        Console.WriteLine($"Busiest: Department {maxDepIdx + 1} ({depTotals[maxDepIdx]} patients)");
     }
 }
