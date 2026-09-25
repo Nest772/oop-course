@@ -7,21 +7,37 @@ internal class Program
     private static void Main(string[] args)
     {
 
-        Patient p1 = new Patient("Ivan", "Petrenko", new DateTime(1983, 5, 14), "A+", "0501234567");
-        Patient p2 = new Patient("Olena", "Koval", new DateTime(1991, 11, 20), "B-", "0672345678");
-        Patient p3 = new Patient("Maxim", "Boyko", new DateTime(2008, 3, 10), "O+", "0933456789");
+        Doctor d1 = new Doctor("Oleh", "Sydorenko", "Cardiology", "LIC-001", "0441234567");
+        Doctor d2 = new Doctor("Natalia", "Moroz", "Neurology", "LIC-002", "0442345678");
 
-        Patient p4 = new Patient();
+        d2.WorkStartHour = 9;
+        d2.WorkEndHour = 18;
 
-        Patient p5 = new Patient("Maria", "Tkach");
+        Doctor d3 = new Doctor("Andriy", "Vlasenko", "Pediatrics");
 
-        Patient[] patients = new Patient[5] { p1, p2, p3, p4, p5 };
+        Doctor d4 = new Doctor();
 
-        for (int i = 0; i < patients.Length; i++)
+        Doctor[] doctors = new Doctor[4] { d1, d2, d3, d4 };
+
+        Console.WriteLine($"Current time: {DateTime.Now:HH:mm}\n");
+
+        for (int i = 0; i < doctors.Length; i++)
         {
-            if (patients[i] != null)
+            if (doctors[i] != null)
             {
-                Console.WriteLine(patients[i].ToString());
+                Console.WriteLine(doctors[i].ToString());
+            }
+        }
+
+        int testHour = 14;
+        Console.WriteLine($"\n--- Availability check at {testHour:D2}:00 ---");
+        for (int i = 0; i < doctors.Length; i++)
+        {
+            if (doctors[i] != null)
+            {
+                bool canAccept = doctors[i].CanAcceptAt(testHour);
+                string availability = canAccept ? "Available" : "Not available";
+                Console.WriteLine($"Dr. {doctors[i].FullName} ({doctors[i].Speciality}): {availability}");
             }
         }
     }
