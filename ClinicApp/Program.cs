@@ -6,36 +6,36 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        PatientManager patientManager = new PatientManager();
-        DoctorManager doctorManager = new DoctorManager();
-        AppointmentManager appointmentManager = new AppointmentManager(patientManager, doctorManager);
+        Clinic clinic = new Clinic("Medical Clinic");
 
-        patientManager.Add(new Patient("Ivan", "Petrenko", new DateTime(1983, 5, 14), "A+", "0501234567"));
-        patientManager.Add(new Patient("Olena", "Koval", new DateTime(1991, 11, 20), "B-", "0672345678"));
-        patientManager.Add(new Patient("Maksym", "Boiko", new DateTime(2008, 3, 10), "O+", "0933456789"));
+        clinic.Patients.Add(new Patient("Ivan", "Petrenko", new DateTime(1983, 5, 14), "A+", "0501234567"));
+        clinic.Patients.Add(new Patient("Olena", "Koval", new DateTime(1991, 11, 20), "B-", "0672345678"));
+        clinic.Patients.Add(new Patient("Maksym", "Boiko", new DateTime(2008, 3, 10), "O+", "0933456789"));
 
-        doctorManager.Add(new Doctor("Oleh", "Sydorenko", "Cardiology", "LIC-001", "0441234567"));
-        doctorManager.Add(new Doctor("Nataliia", "Moroz", "Neurology", "LIC-002", "0442345678"));
-        doctorManager.Add(new Doctor("Andrii", "Vlasenko", "Pediatrics", "LIC-003", "0443456789"));
+        clinic.Doctors.Add(new Doctor("Oleh", "Sydorenko", "Cardiology", "LIC-001", "0441234567"));
+        clinic.Doctors.Add(new Doctor("Nataliia", "Moroz", "Neurology", "LIC-002", "0442345678"));
+        clinic.Doctors.Add(new Doctor("Andrii", "Vlasenko", "Pediatrics", "LIC-003", "0443456789"));
 
-        appointmentManager.Book(1, 1, new DateTime(2026, 5, 9, 10, 0, 0), 30);
-        appointmentManager.Book(2, 2, new DateTime(2026, 5, 9, 11, 0, 0), 45);
-        appointmentManager.Book(3, 3, new DateTime(2026, 5, 10, 9, 0, 0), 20);
+        clinic.Appointments.Book(1, 1, new DateTime(2026, 5, 9, 10, 0, 0), 30);
+        clinic.Appointments.Book(2, 2, new DateTime(2026, 5, 9, 11, 0, 0), 45);
+        clinic.Appointments.Book(3, 3, new DateTime(2026, 5, 10, 9, 0, 0), 20);
 
         Console.Clear();
-        RunMainMenu(patientManager, doctorManager, appointmentManager);
+        RunMainMenu(clinic);
     }
 
-    private static void RunMainMenu(PatientManager pManager, DoctorManager dManager, AppointmentManager aManager)
+    private static void RunMainMenu(Clinic clinic)
     {
         bool running = true;
 
         while (running)
         {
-            Console.WriteLine("\n=== CLINIC MAIN MENU ===");
+            Console.WriteLine($"\n=== MAIN MENU: {clinic.Name} ===");
             Console.WriteLine("1. Patient Management");
             Console.WriteLine("2. Doctor Management");
             Console.WriteLine("3. Appointment Management");
+            Console.WriteLine("4. View schedule for a date");
+            Console.WriteLine("5. Generate report");
             Console.WriteLine("0. Exit");
             Console.Write("Select an option: ");
 
@@ -44,13 +44,27 @@ internal class Program
             switch (input)
             {
                 case "1":
-                    RunPatientMenu(pManager);
+                    RunPatientMenu(clinic);
                     break;
                 case "2":
-                    RunDoctorMenu(dManager);
+                    RunDoctorMenu(clinic);
                     break;
                 case "3":
-                    RunAppointmentMenu(aManager, pManager, dManager);
+                    RunAppointmentMenu(clinic);
+                    break;
+                case "4":
+                    Console.Write("Enter date (yyyy-MM-dd): ");
+                    if (DateTime.TryParse(Console.ReadLine()!, out DateTime date))
+                    {
+                        clinic.DisplaySchedule(date);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid date format.");
+                    }
+                    break;
+                case "5":
+                    clinic.GenerateReport();
                     break;
                 case "0":
                     running = false;
@@ -62,19 +76,19 @@ internal class Program
         }
     }
 
-    private static void RunPatientMenu(PatientManager manager)
+    private static void RunPatientMenu(Clinic clinic)
     {
         Console.WriteLine("\n--- MENU: PATIENTS ---");
-        manager.DisplayAll();
+        clinic.Patients.DisplayAll();
     }
 
-    private static void RunDoctorMenu(DoctorManager manager)
+    private static void RunDoctorMenu(Clinic clinic)
     {
         Console.WriteLine("\n--- MENU: DOCTORS ---");
-        manager.DisplayAll();
+        clinic.Doctors.DisplayAll();
     }
 
-    private static void RunAppointmentMenu(AppointmentManager aManager, PatientManager pManager, DoctorManager dManager)
+    private static void RunAppointmentMenu(Clinic clinic)
     {
         bool running = true;
 
@@ -88,19 +102,19 @@ internal class Program
             Console.WriteLine("5. Cancel appointment");
             Console.WriteLine("6. Complete appointment");
             Console.WriteLine("0. Back to main menu");
-            Console.Write("Select an option: ");
+            Console.Write("Select an action: ");
 
             string input = Console.ReadLine()!;
 
             switch (input)
             {
                 case "1":
-                    BookWorkflow(aManager, pManager, dManager);
+                    BookWorkflow(clinic);
                     break;
 
                 case "2":
                     Console.WriteLine("\n=== Upcoming Appointments ===");
-                    aManager.DisplayList(aManager.GetUpcoming());
+                    clinic.Appointments.DisplayList(clinic.Appointments.GetUpcoming());
                     break;
 
                 case "3":
@@ -108,7 +122,7 @@ internal class Program
                     if (int.TryParse(Console.ReadLine()!, out int pId))
                     {
                         Console.WriteLine($"\n=== Appointments for Patient #{pId} ===");
-                        aManager.DisplayList(aManager.GetByPatient(pId));
+                        clinic.Appointments.DisplayList(clinic.Appointments.GetByPatient(pId));
                     }
                     break;
 
@@ -117,7 +131,7 @@ internal class Program
                     if (int.TryParse(Console.ReadLine()!, out int dId))
                     {
                         Console.WriteLine($"\n=== Appointments for Doctor #{dId} ===");
-                        aManager.DisplayList(aManager.GetByDoctor(dId));
+                        clinic.Appointments.DisplayList(clinic.Appointments.GetByDoctor(dId));
                     }
                     break;
 
@@ -127,7 +141,7 @@ internal class Program
                     {
                         Console.Write("Enter cancellation reason (optional): ");
                         string reason = Console.ReadLine()!;
-                        aManager.Cancel(cancelId, reason);
+                        clinic.Appointments.Cancel(cancelId, reason);
                     }
                     break;
 
@@ -135,7 +149,7 @@ internal class Program
                     Console.Write("Enter Appointment ID to complete: ");
                     if (int.TryParse(Console.ReadLine()!, out int completeId))
                     {
-                        aManager.Complete(completeId);
+                        clinic.Appointments.Complete(completeId);
                     }
                     break;
 
@@ -150,12 +164,13 @@ internal class Program
         }
     }
 
-    private static void BookWorkflow(AppointmentManager aManager, PatientManager pManager, DoctorManager dManager)
+    private static void BookWorkflow(Clinic clinic)
     {
         Console.WriteLine("\n--- Book Appointment ---");
 
-        pManager.DisplayAll();
-        dManager.DisplayAll();
+        // Display lists through the single clinic object
+        clinic.Patients.DisplayAll();
+        clinic.Doctors.DisplayAll();
 
         Console.Write("Enter Patient ID: ");
         if (!int.TryParse(Console.ReadLine()!, out int patientId))
@@ -186,6 +201,6 @@ internal class Program
             int.TryParse(durationInput, out duration);
         }
 
-        aManager.Book(patientId, doctorId, scheduledAt, duration);
+        clinic.Appointments.Book(patientId, doctorId, scheduledAt, duration);
     }
 }
