@@ -54,6 +54,8 @@ public class Doctor
     public override string ToString()
     {
         string status = IsAvailableNow ? "available now" : "outside working hours";
+        string formattedSpec = ClinicFormatter.FormatSpeciality(Speciality);
+        string formattedPhone = ClinicFormatter.FormatPhone(Phone);
         return $"[{Id}] {FullName} | {Speciality} | {LicenseNumber} | Tel: {Phone} | {Schedule} | {status}";
     }
 }

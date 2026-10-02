@@ -65,8 +65,12 @@ public class Patient
         return "senior";
     }
 
-    public override string ToString()
-    {
-        return $"[{Id}] {FullName} | Age: {Age} ({GetAgeCategory()}) | Blood: {BloodType} | Phone: {Phone}";
-    }
+public override string ToString()
+{
+    string formattedAge = ClinicFormatter.FormatAge(Age);
+    string formattedBlood = ClinicFormatter.FormatBloodType(BloodType);
+    string formattedPhone = ClinicFormatter.FormatPhone(Phone);
+
+    return $"[{Id}] {FullName} | Age: {formattedAge} ({GetAgeCategory()}) | Bloodtype: {formattedBlood} | Тел: {formattedPhone}";
+}
 }
