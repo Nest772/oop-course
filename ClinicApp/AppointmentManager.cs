@@ -18,17 +18,18 @@ public class AppointmentManager
             return _count;
         }
     }
-     public Appointment? this[int index]
-{
-    get
+
+    public Appointment? this[int index]
     {
-        if (index < 0 || index >= _count)
+        get
         {
-            return null;
+            if (index < 0 || index >= _count)
+            {
+                return null;
+            }
+            return _appointments[index];
         }
-        return _appointments[index];
     }
-}
 
     public AppointmentManager(PatientManager patients, DoctorManager doctors)
     {
@@ -192,6 +193,11 @@ public class AppointmentManager
         return result;
     }
 
+    public Appointment[] GetByDate(int year, int month, int day)
+    {
+        return GetByDate(new DateTime(year, month, day));
+    }
+
     public Appointment[] GetUpcoming()
     {
         int matchCount = 0;
@@ -215,6 +221,7 @@ public class AppointmentManager
         }
         return result;
     }
+
 
     public void DisplayAppointment(Appointment appt)
     {

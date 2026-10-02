@@ -17,16 +17,16 @@ public class DoctorManager
     }
 
     public Doctor? this[int index]
-{
-    get
     {
-        if (index < 0 || index >= _count)
+        get
         {
-            return null;
+            if (index < 0 || index >= _count)
+            {
+                return null;
+            }
+            return _doctors[index];
         }
-        return _doctors[index];
     }
-}
 
     public void Add(Doctor doctor)
     {
@@ -58,7 +58,47 @@ public class DoctorManager
         return null;
     }
 
-    
+       public bool TryFindById(int id, out Doctor? doctor)
+    {
+        doctor = FindById(id);
+        return doctor != null;
+    }
+
+    public Doctor[] FindByName(string name)
+    {
+        if (name == null)
+        {
+            name = string.Empty;
+        }
+
+        string lowerName = name.ToLower();
+        int matches = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            string fullNameLower = _doctors[i].FullName.ToLower();
+            if (fullNameLower.Contains(lowerName))
+            {
+                matches++;
+            }
+        }
+
+        Doctor[] result = new Doctor[matches];
+        int resultIndex = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            string fullNameLower = _doctors[i].FullName.ToLower();
+            if (fullNameLower.Contains(lowerName))
+            {
+                result[resultIndex] = _doctors[i];
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
+
     public Doctor[] FindBySpeciality(Speciality speciality)
     {
         int matches = 0;
@@ -86,22 +126,23 @@ public class DoctorManager
         return result;
     }
 
-    
-    public Doctor[] FindBySpeciality(string speciality)
+   
+    public Doctor[] FindBySpeciality(string query)
     {
-        if (speciality == null)
+        if (string.IsNullOrWhiteSpace(query))
         {
-            speciality = string.Empty;
+            return new Doctor[0];
         }
 
-        string lowerSpec = speciality.ToLower();
+        string q = query.Trim().ToLower();
         int matches = 0;
 
         for (int i = 0; i < _count; i++)
         {
-            
-            string doctorSpecLower = _doctors[i].Speciality.ToString().ToLower();
-            if (doctorSpecLower.Contains(lowerSpec))
+            string specEnum = _doctors[i].Speciality.ToString().ToLower();
+            string specUa = ClinicFormatter.FormatSpeciality(_doctors[i].Speciality).ToLower();
+
+            if (specEnum.Contains(q) || specUa.Contains(q))
             {
                 matches++;
             }
@@ -112,8 +153,10 @@ public class DoctorManager
 
         for (int i = 0; i < _count; i++)
         {
-            string doctorSpecLower = _doctors[i].Speciality.ToString().ToLower();
-            if (doctorSpecLower.Contains(lowerSpec))
+            string specEnum = _doctors[i].Speciality.ToString().ToLower();
+            string specUa = ClinicFormatter.FormatSpeciality(_doctors[i].Speciality).ToLower();
+
+            if (specEnum.Contains(q) || specUa.Contains(q))
             {
                 result[resultIndex] = _doctors[i];
                 resultIndex++;
@@ -132,6 +175,7 @@ public class DoctorManager
         }
         return copy;
     }
+
 
     public bool Remove(int id)
     {
@@ -204,13 +248,11 @@ public class DoctorManager
 
         for (int i = 0; i < _count; i++)
         {
-            
             Speciality currentSpec = _doctors[i].Speciality;
             bool isAlreadyProcessed = false;
 
             for (int j = 0; j < i; j++)
             {
-
                 if (_doctors[j].Speciality == currentSpec)
                 {
                     isAlreadyProcessed = true;
@@ -218,7 +260,7 @@ public class DoctorManager
                 }
             }
 
-            if (isAlreadyProcessed == false)
+            if (!isAlreadyProcessed)
             {
                 int specCount = 0;
                 for (int k = 0; k < _count; k++)
