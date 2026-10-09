@@ -8,44 +8,26 @@ public class Patient
 
     public int Id { get; }
 
-private string _firstName = "";
+  private string _firstName = "";
 
 public string FirstName
 {
     get => _firstName;
     set
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException(
-                "First name cannot be empty.",
-                nameof(FirstName));
-
-        if (value.Length > 50)
-            throw new ArgumentException(
-                "First name cannot exceed 50 characters.",
-                nameof(FirstName));
-
+        ClinicValidator.ValidateName(value, nameof(FirstName));
         _firstName = value;
     }
 }
 
-private string _lastName = "";
+  private string _lastName = "";
 
 public string LastName
 {
     get => _lastName;
     set
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException(
-                "Last name cannot be empty.",
-                nameof(LastName));
-
-        if (value.Length > 50)
-            throw new ArgumentException(
-                "Last name cannot exceed 50 characters.",
-                nameof(LastName));
-
+        ClinicValidator.ValidateName(value, nameof(LastName));
         _lastName = value;
     }
 }
@@ -57,40 +39,19 @@ public DateTime DateOfBirth
     get => _dateOfBirth;
     set
     {
-        if (value > DateTime.Today)
-            throw new ArgumentOutOfRangeException(
-                nameof(DateOfBirth),
-                "Date of birth cannot be in the future.");
-
-        if (value < new DateTime(1900, 1, 1))
-            throw new ArgumentOutOfRangeException(
-                nameof(DateOfBirth),
-                "Date of birth cannot be earlier than 1900.");
-
+        ClinicValidator.ValidateDate(value, nameof(DateOfBirth));
         _dateOfBirth = value;
     }
 }
 
-private string _phone = "";
+  private string _phone = "";
 
 public string Phone
 {
     get => _phone;
     set
     {
-        if (value == null || value.Length != 10)
-            throw new ArgumentException(
-                "Phone must contain exactly 10 digits.",
-                nameof(Phone));
-
-        for (int i = 0; i < value.Length; i++)
-        {
-            if (value[i] < '0' || value[i] > '9')
-                throw new ArgumentException(
-                    "Phone must contain only digits.",
-                    nameof(Phone));
-        }
-
+        ClinicValidator.ValidatePhone(value);
         _phone = value;
     }
 }

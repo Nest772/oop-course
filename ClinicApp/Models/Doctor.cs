@@ -13,7 +13,11 @@ public class Doctor
 public string FirstName
 {
     get => _firstName;
-    set => _firstName = value;
+    set
+    {
+        ClinicValidator.ValidateName(value, nameof(FirstName));
+        _firstName = value;
+    }
 }
 
 private string _lastName = "";
@@ -21,9 +25,12 @@ private string _lastName = "";
 public string LastName
 {
     get => _lastName;
-    set => _lastName = value;
+    set
+    {
+        ClinicValidator.ValidateName(value, nameof(LastName));
+        _lastName = value;
+    }
 }
-
 private string _licenseNumber = "";
 
 public string LicenseNumber
@@ -41,11 +48,14 @@ public string LicenseNumber
 }
 
 private string _phone = "";
-
 public string Phone
 {
     get => _phone;
-    set => _phone = value;
+    set
+    {
+        ClinicValidator.ValidatePhone(value);
+        _phone = value;
+    }
 }
     public Speciality Speciality { get; set; }
 
