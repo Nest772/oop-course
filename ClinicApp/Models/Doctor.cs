@@ -29,7 +29,15 @@ private string _licenseNumber = "";
 public string LicenseNumber
 {
     get => _licenseNumber;
-    set => _licenseNumber = value;
+    set
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException(
+                "License number cannot be empty.",
+                nameof(LicenseNumber));
+
+        _licenseNumber = value;
+    }
 }
 
 private string _phone = "";
