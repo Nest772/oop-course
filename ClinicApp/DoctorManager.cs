@@ -16,6 +16,18 @@ public class DoctorManager
         }
     }
 
+    public Doctor? this[int index]
+    {
+        get
+        {
+            if (index < 0 || index >= _count)
+            {
+                return null;
+            }
+            return _doctors[index];
+        }
+    }
+
     public void Add(Doctor doctor)
     {
         if (doctor == null)
@@ -46,20 +58,26 @@ public class DoctorManager
         return null;
     }
 
-    public Doctor[] FindBySpeciality(string speciality)
+       public bool TryFindById(int id, out Doctor? doctor)
     {
-        if (speciality == null)
+        doctor = FindById(id);
+        return doctor != null;
+    }
+
+    public Doctor[] FindByName(string name)
+    {
+        if (name == null)
         {
-            speciality = string.Empty;
+            name = string.Empty;
         }
 
-        string lowerSpec = speciality.ToLower();
+        string lowerName = name.ToLower();
         int matches = 0;
 
         for (int i = 0; i < _count; i++)
         {
-            string doctorSpecLower = _doctors[i].Speciality.ToLower();
-            if (doctorSpecLower.Contains(lowerSpec))
+            string fullNameLower = _doctors[i].FullName.ToLower();
+            if (fullNameLower.Contains(lowerName))
             {
                 matches++;
             }
@@ -70,8 +88,75 @@ public class DoctorManager
 
         for (int i = 0; i < _count; i++)
         {
-            string doctorSpecLower = _doctors[i].Speciality.ToLower();
-            if (doctorSpecLower.Contains(lowerSpec))
+            string fullNameLower = _doctors[i].FullName.ToLower();
+            if (fullNameLower.Contains(lowerName))
+            {
+                result[resultIndex] = _doctors[i];
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
+
+    public Doctor[] FindBySpeciality(Speciality speciality)
+    {
+        int matches = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_doctors[i].Speciality == speciality)
+            {
+                matches++;
+            }
+        }
+
+        Doctor[] result = new Doctor[matches];
+        int resultIndex = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            if (_doctors[i].Speciality == speciality)
+            {
+                result[resultIndex] = _doctors[i];
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
+
+   
+    public Doctor[] FindBySpeciality(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return new Doctor[0];
+        }
+
+        string q = query.Trim().ToLower();
+        int matches = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            string specEnum = _doctors[i].Speciality.ToString().ToLower();
+            string specUa = ClinicFormatter.FormatSpeciality(_doctors[i].Speciality).ToLower();
+
+            if (specEnum.Contains(q) || specUa.Contains(q))
+            {
+                matches++;
+            }
+        }
+
+        Doctor[] result = new Doctor[matches];
+        int resultIndex = 0;
+
+        for (int i = 0; i < _count; i++)
+        {
+            string specEnum = _doctors[i].Speciality.ToString().ToLower();
+            string specUa = ClinicFormatter.FormatSpeciality(_doctors[i].Speciality).ToLower();
+
+            if (specEnum.Contains(q) || specUa.Contains(q))
             {
                 result[resultIndex] = _doctors[i];
                 resultIndex++;
@@ -90,6 +175,7 @@ public class DoctorManager
         }
         return copy;
     }
+
 
     public bool Remove(int id)
     {
@@ -162,24 +248,24 @@ public class DoctorManager
 
         for (int i = 0; i < _count; i++)
         {
-            string currentSpec = _doctors[i].Speciality;
+            Speciality currentSpec = _doctors[i].Speciality;
             bool isAlreadyProcessed = false;
 
             for (int j = 0; j < i; j++)
             {
-                if (_doctors[j].Speciality.ToLower() == currentSpec.ToLower())
+                if (_doctors[j].Speciality == currentSpec)
                 {
                     isAlreadyProcessed = true;
                     break;
                 }
             }
 
-            if (isAlreadyProcessed == false)
+            if (!isAlreadyProcessed)
             {
                 int specCount = 0;
                 for (int k = 0; k < _count; k++)
                 {
-                    if (_doctors[k].Speciality.ToLower() == currentSpec.ToLower())
+                    if (_doctors[k].Speciality == currentSpec)
                     {
                         specCount++;
                     }

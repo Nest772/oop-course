@@ -10,22 +10,17 @@ public class Doctor
 
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string Speciality { get; set; }
+    public Speciality Speciality { get; set; }
     public string LicenseNumber { get; set; }
     public string Phone { get; set; }
 
-    public int WorkStartHour { get; set; }
-    public int WorkEndHour { get; set; }
+    public WorkSchedule Schedule { get; set; }
 
     public string FullName => $"{FirstName} {LastName}";
 
-    public int WorkingHoursPerDay => WorkEndHour - WorkStartHour;
+    public bool IsAvailableNow => Schedule.IsNow;
 
-    public string WorkSchedule => $"{WorkStartHour:D2}:00–{WorkEndHour:D2}:00";
-
-    public bool IsAvailableNow => CanAcceptAt(DateTime.Now.Hour);
-
-    public Doctor(string firstName, string lastName, string speciality, string licenseNumber, string phone)
+    public Doctor(string firstName, string lastName, Speciality speciality, string licenseNumber, string phone, WorkSchedule schedule)
     {
         Id = _nextId++;
         FirstName = firstName;
@@ -33,28 +28,34 @@ public class Doctor
         Speciality = speciality;
         LicenseNumber = licenseNumber;
         Phone = phone;
-        WorkStartHour = 8;
-        WorkEndHour = 17;
+        Schedule = schedule;
     }
 
-    public Doctor(string firstName, string lastName, string speciality)
-        : this(firstName, lastName, speciality, "LIC-000", "0000000000")
+    public Doctor(string firstName, string lastName, Speciality speciality, WorkSchedule schedule)
+        : this(firstName, lastName, speciality, "LIC-000", "0000000000", schedule)
+    {
+    }
+
+    public Doctor(string firstName, string lastName, Speciality speciality)
+        : this(firstName, lastName, speciality, new WorkSchedule(8, 17)) 
     {
     }
 
     public Doctor()
-        : this("Unknown", "Doctor", "General Practice")
+        : this("Unknown", "Doctor", Speciality.General)
     {
     }
 
     public bool CanAcceptAt(int hour)
     {
-        return hour >= WorkStartHour && hour < WorkEndHour;
+        return Schedule.Contains(hour);
     }
 
     public override string ToString()
     {
         string status = IsAvailableNow ? "available now" : "outside working hours";
-        return $"[{Id}] {FullName} | {Speciality} | {LicenseNumber} | Tel: {Phone} | {WorkSchedule} ({WorkingHoursPerDay} hrs) | {status}";
+        string formattedSpec = ClinicFormatter.FormatSpeciality(Speciality);
+        string formattedPhone = ClinicFormatter.FormatPhone(Phone);
+        return $"[{Id}] {FullName} | {Speciality} | {LicenseNumber} | Tel: {Phone} | {Schedule} | {status}";
     }
 }
