@@ -1,6 +1,6 @@
-using System;
+using ClinicApp.Enums;
 
-namespace ClinicApp;
+namespace ClinicApp.Models;
 
 public class Appointment
 {

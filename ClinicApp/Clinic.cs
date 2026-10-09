@@ -1,5 +1,6 @@
 using System;
-
+using ClinicApp.Models;
+using ClinicApp.Managers;
 namespace ClinicApp;
 
 public class Clinic

@@ -1,4 +1,7 @@
 ﻿using System;
+using ClinicApp.Enums;
+using ClinicApp.Models;
+
 
 namespace ClinicApp;
 
@@ -17,7 +20,7 @@ class Program
         clinic.Doctors.Add(new Doctor("Oleh", "Sydorenko", Speciality.Cardiology));
         clinic.Doctors.Add(new Doctor("Natalia", "Moroz", Speciality.Neurology));
 
-        clinic.Appointments.Add(new Appointment(1, 1, new DateTime(2026, 5, 10, 10, 0, 0)));
+        clinic.Appointments.Book(1, 1, new DateTime(2026, 5, 10, 10, 0, 0));
 
         Console.WriteLine("--- Method Overloading: FindBySpeciality ---");
         Doctor[] docsByEnum = clinic.Doctors.FindBySpeciality(Speciality.Cardiology); 
