@@ -191,6 +191,36 @@ public Prescription[] GetPrescriptions(int patientId)
 
     return result;
 }
+public Prescription[] GetActivePrescriptions(int patientId)
+{
+    int count = 0;
+
+    for (int i = 0; i < _count; i++)
+    {
+        if (_records[i].PatientId == patientId &&
+            _records[i] is Prescription prescription &&
+            prescription.IsActive())
+        {
+            count++;
+        }
+    }
+
+    Prescription[] result = new Prescription[count];
+    int index = 0;
+
+    for (int i = 0; i < _count; i++)
+    {
+        if (_records[i].PatientId == patientId &&
+            _records[i] is Prescription prescription &&
+            prescription.IsActive())
+        {
+            result[index] = prescription;
+            index++;
+        }
+    }
+
+    return result;
+}
 
 public Diagnosis[] GetChronicDiagnoses(int patientId)
 {
