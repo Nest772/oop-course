@@ -9,13 +9,14 @@ public class Clinic
     public PatientManager Patients { get; }
     public DoctorManager Doctors { get; }
     public AppointmentManager Appointments { get; }
+    public MedicalRecordManager MedicalRecords { get; }
 
     public Clinic(string name)
     {
         Name = name;
         Patients = new PatientManager();
         Doctors = new DoctorManager();
-        
+        MedicalRecords = new MedicalRecordManager();
         Appointments = new AppointmentManager(Patients, Doctors);
     }
 
