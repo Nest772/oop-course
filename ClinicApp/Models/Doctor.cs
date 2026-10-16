@@ -1,6 +1,6 @@
-using System;
-
-namespace ClinicApp;
+using ClinicApp.Enums;
+using ClinicApp.Utils;
+namespace ClinicApp.Models;
 
 public class Doctor
 {
@@ -8,11 +8,56 @@ public class Doctor
 
     public int Id { get; }
 
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+  private string _firstName = "";
+
+public string FirstName
+{
+    get => _firstName;
+    set
+    {
+        ClinicValidator.ValidateName(value, nameof(FirstName));
+        _firstName = value;
+    }
+}
+
+private string _lastName = "";
+
+public string LastName
+{
+    get => _lastName;
+    set
+    {
+        ClinicValidator.ValidateName(value, nameof(LastName));
+        _lastName = value;
+    }
+}
+private string _licenseNumber = "";
+
+public string LicenseNumber
+{
+    get => _licenseNumber;
+    set
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException(
+                "License number cannot be empty.",
+                nameof(LicenseNumber));
+
+        _licenseNumber = value;
+    }
+}
+
+private string _phone = "";
+public string Phone
+{
+    get => _phone;
+    set
+    {
+        ClinicValidator.ValidatePhone(value);
+        _phone = value;
+    }
+}
     public Speciality Speciality { get; set; }
-    public string LicenseNumber { get; set; }
-    public string Phone { get; set; }
 
     public WorkSchedule Schedule { get; set; }
 
