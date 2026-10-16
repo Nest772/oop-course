@@ -192,34 +192,37 @@ public Prescription[] GetPrescriptions(int patientId)
     return result;
 }
 
-public Prescription[] GetPrescriptions(int patientId)
+public Diagnosis[] GetChronicDiagnoses(int patientId)
 {
     int matches = 0;
 
     for (int i = 0; i < _count; i++)
     {
         if (_records[i].PatientId == patientId &&
-            _records[i] is Prescription)
+            _records[i] is Diagnosis diagnosis &&
+            diagnosis.IsChronic)
         {
             matches++;
         }
     }
 
-    Prescription[] result = new Prescription[matches];
+    Diagnosis[] result = new Diagnosis[matches];
     int index = 0;
 
     for (int i = 0; i < _count; i++)
     {
         if (_records[i].PatientId == patientId &&
-            _records[i] is Prescription prescription)
+            _records[i] is Diagnosis diagnosis &&
+            diagnosis.IsChronic)
         {
-            result[index] = prescription;
+            result[index] = diagnosis;
             index++;
         }
     }
 
     return result;
 }
+
 
 public void DisplayPatientSummary(int patientId)
 {
