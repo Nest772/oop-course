@@ -19,6 +19,17 @@ public class AppointmentManager
             return _count;
         }
     }
+public Appointment[] GetAll()
+{
+    Appointment[] result = new Appointment[Count];
+
+    for (int i = 0; i < Count; i++)
+    {
+        result[i] = _appointments[i];
+    }
+
+    return result;
+}
 
     public Appointment? this[int index]
     {
