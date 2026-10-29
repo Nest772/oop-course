@@ -1,4 +1,3 @@
-using ClinicApp.Enums;
 using ClinicApp.Models;
 using ClinicApp.Interfaces;
 namespace ClinicApp.Managers;
@@ -12,41 +11,36 @@ public class AppointmentManager
     private PatientManager _patients;
     private DoctorManager _doctors;
 
-    public int Count
+    public int Count => _count;
+
+    public Appointment[] GetAll()
     {
-        get
+        Appointment[] result = new Appointment[Count];
+
+        for (int i = 0; i < Count; i++)
         {
-            return _count;
+            result[i] = _appointments[i];
         }
-    }
-public Appointment[] GetAll()
-{
-    Appointment[] result = new Appointment[Count];
 
-    for (int i = 0; i < Count; i++)
-    {
-        result[i] = _appointments[i];
+        return result;
     }
 
-    return result;
-}
-
-public static int CancelAll(
-    ICancellable[] items,
-    string reason = "")
-{
-    int cancelledCount = 0;
-
-    for (int i = 0; i < items.Length; i++)
+    public static int CancelAll(
+        ICancellable[] items,
+        string reason = "")
     {
-        if (items[i] != null && items[i].Cancel(reason))
+        int cancelledCount = 0;
+
+        for (int i = 0; i < items.Length; i++)
         {
-            cancelledCount++;
+            if (items[i] != null && items[i].Cancel(reason))
+            {
+                cancelledCount++;
+            }
         }
-    }
 
-    return cancelledCount;
-}
+        return cancelledCount;
+    }
 
     public Appointment? this[int index]
     {
@@ -78,7 +72,7 @@ public static int CancelAll(
         return null;
     }
 
-    public bool Book(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes = 30)
+    private bool TryBook(int patientId, int doctorId, Func<Appointment> createAppointment)
     {
         if (_count >= MaxAppointments)
         {
@@ -100,12 +94,27 @@ public static int CancelAll(
             return false;
         }
 
-        Appointment appt = new Appointment(patientId, doctorId, scheduledAt, durationMinutes);
+        Appointment appt = createAppointment();
         _appointments[_count] = appt;
         _count++;
 
-        Console.WriteLine($"Appointment [{appt.Id}] created: {patient.FullName} → {doctor.FullName} at {scheduledAt:dd.MM.yyyy HH:mm}");
+        Console.WriteLine($"Appointment [{appt.Id}] created: {patient.FullName} → {doctor.FullName} at {appt.ScheduledAt:dd.MM.yyyy HH:mm}");
         return true;
+    }
+
+    public bool Book(int patientId, int doctorId, DateTime scheduledAt, int durationMinutes = 30)
+    {
+        return TryBook(patientId, doctorId, () => new RegularAppointment(patientId, doctorId, scheduledAt, durationMinutes));
+    }
+
+    public bool BookUrgent(int patientId, int doctorId, DateTime scheduledAt, string urgencyNote = "", int durationMinutes = 30)
+    {
+        return TryBook(patientId, doctorId, () => new UrgentAppointment(patientId, doctorId, scheduledAt, urgencyNote, durationMinutes));
+    }
+
+    public bool BookSpecialist(int patientId, int doctorId, DateTime scheduledAt, string topic = "", int durationMinutes = 45)
+    {
+        return TryBook(patientId, doctorId, () => new SpecialistAppointment(patientId, doctorId, scheduledAt, topic, durationMinutes));
     }
 
     public bool Cancel(int id, string reason = "")
@@ -250,7 +259,6 @@ public static int CancelAll(
         }
         return result;
     }
-
 
     public void DisplayAppointment(Appointment appt)
     {
