@@ -1,3 +1,4 @@
+using System.Globalization;
 using ClinicApp.Enums;
 using ClinicApp.Utils;
 using ClinicApp.Interfaces;
@@ -13,20 +14,20 @@ public class Appointment : IPayable, ICancellable
     public int DoctorId { get; }
 
     public DateTime ScheduledAt { get; set; }
-private int _durationMinutes;
+    private int _durationMinutes;
 
-public int DurationMinutes
-{
-    get => _durationMinutes;
-    set
+    public int DurationMinutes
     {
-        ClinicValidator.ValidatePositive(
-            value,
-            nameof(DurationMinutes));
+        get => _durationMinutes;
+        set
+        {
+            ClinicValidator.ValidatePositive(
+                value,
+                nameof(DurationMinutes));
 
-        _durationMinutes = value;
+            _durationMinutes = value;
+        }
     }
-}
     public AppointmentStatus Status { get; private set; }
     public string Notes { get; private set; }
 
@@ -45,33 +46,41 @@ public int DurationMinutes
         Notes = string.Empty;
     }
 
-public bool IsCancelled =>
-    Status == AppointmentStatus.Cancelled;
+    public bool IsCancelled => Status == AppointmentStatus.Cancelled;
 
-public string CancellationReason =>
-    IsCancelled ? Notes : "";
+    public string CancellationReason => IsCancelled ? Notes : "";
 
-private bool _isPaid = false;
+    private bool _isPaid = false;
 
-public decimal GetCost()
-{
-    return DurationMinutes * 10m;
-}
-
-public bool IsPaid
-{
-    get { return _isPaid; }
-}
-
-public void MarkPaid()
-{
-    if (IsCancelled)
+    public virtual decimal GetCost()
     {
-        return;
+        return DurationMinutes * 10m;
     }
 
-    _isPaid = true;
-}
+    public virtual string GetDescription()
+    {
+        return "Прийом";
+    }
+
+    public int GetPriority()
+    {
+        return 3;
+    }
+
+    public bool IsPaid
+    {
+        get { return _isPaid; }
+    }
+
+    public void MarkPaid()
+    {
+        if (IsCancelled)
+        {
+            return;
+        }
+
+        _isPaid = true;
+    }
 
     public bool Cancel(string reason = "")
     {
@@ -102,13 +111,14 @@ public void MarkPaid()
 
     public override string ToString()
     {
-        string baseInfo = $"[{Id}] Patient #{PatientId} → Doctor #{DoctorId} | {ScheduledAt:dd.MM.yyyy HH:mm}–{EndsAt:HH:mm} | {Status}";
+        string formattedCost = GetCost().ToString("F2", CultureInfo.InvariantCulture);
+        string baseInfo = $"[{Id}] {GetDescription()} | Пацієнт #{PatientId} → Лікар #{DoctorId} | {ScheduledAt:dd.MM.yyyy HH:mm}–{EndsAt:HH:mm} | {Status}";
 
-        if (Notes != null && Notes.Length > 0)
+        if (!string.IsNullOrEmpty(Notes))
         {
-            return $"{baseInfo} | {Notes}";
+            return $"{baseInfo} | {Notes} | {formattedCost} грн";
         }
 
-        return baseInfo;
+        return $"{baseInfo} | {formattedCost} грн";
     }
 }
