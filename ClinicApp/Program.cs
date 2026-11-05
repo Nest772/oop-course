@@ -12,6 +12,38 @@ public class Program
     {
         Clinic clinic = new Clinic("Амбулаторія №1");
 
+        DateTime tomorrow = DateTime.Today.AddDays(1);
+
+        clinic.Appointments.Book(1, 1, tomorrow.AddHours(10));
+        clinic.Appointments.BookUrgent(2, 2, tomorrow.AddHours(11), "біль у грудях");
+        clinic.Appointments.BookSpecialist(3, 3, tomorrow.AddHours(12), "кардіологія", 60);
+
+        UrgentAppointment urgentAppt = new UrgentAppointment(1, 1, tomorrow.AddHours(10), "тест");
+        Appointment baseAppt = urgentAppt;
+
+        Console.WriteLine("== new vs override ==");
+        Console.WriteLine($"Через Appointment:       {baseAppt.GetDescription()} | пріоритет {baseAppt.GetPriority()}");
+        Console.WriteLine($"Через UrgentAppointment: {urgentAppt.GetDescription()} | пріоритет {urgentAppt.GetPriority()}");
+        Console.WriteLine();
+
+        /*
+        ВІДПОВІДІ НА ЗАПИТАННЯ:
+
+        1. Чому GetDescription() через змінну типу Appointment дає опис термінового прийому?
+           Оскільки метод GetDescription() є віртуальним (virtual у батьківському класі та override у підкласі),
+           C# застосовує динамічний поліморфізм. Виклик методу визначається реальним типом об'єкта в пам'яті (UrgentAppointment),
+           а не типом змінної.
+
+        2. Чому GetPriority() через ту саму змінну повертає 3, хоча об'єкт — UrgentAppointment?
+           Метод GetPriority() не є віртуальним у базовому класі. У підкласі UrgentAppointment він оголошений з модифікатором new,
+           що лише приховує (shadows) метод батька, а не перевизначає його. При виклику невіртуального або прихованого через new методу
+           C# використовує статичне зв'язування за типом змінної (Appointment), тому викликається версія базового класу.
+
+        3. Що треба змінити в Appointment і UrgentAppointment, щоб GetPriority() теж працював поліморфно?
+           У класі Appointment слід позначити метод як віртуальний: public virtual int GetPriority() => 3;
+           А в класі UrgentAppointment замінити модифікатор new на override: public override int GetPriority() => 1;
+        */
+
         while (true)
         {
             ShowMainMenu();
@@ -56,7 +88,7 @@ public class Program
     private static void ShowMainMenu()
     {
         Console.WriteLine("╔══════════════════════════════════════════════╗");
-        Console.WriteLine("║           МЕДИЧНА КЛІНІКА                    ║");
+        Console.WriteLine("║            МЕДИЧНА КЛІНІКА                   ║");
         Console.WriteLine("╠══════════════════════════════════════════════╣");
         Console.WriteLine("║  1. Пацієнти       — реєстрація, пошук       ║");
         Console.WriteLine("║  2. Лікарі         — персонал, розклад       ║");
@@ -145,7 +177,7 @@ public class Program
         while (true)
         {
             Console.WriteLine("\n── Записи ───────────────────");
-            Console.WriteLine("1. Створити запис  ...  8. Скасувати всі записи пацієнта  0. Назад");
+            Console.WriteLine("1. Створити запис  ...  8. Скасувати всі записи пацієнта  9. За типом прийому  0. Назад");
             Console.Write("Оберіть: ");
 
             string input = Console.ReadLine() ?? "";
@@ -154,7 +186,6 @@ public class Program
 
             switch (choice)
             {
-
                 case 8:
                     Console.Write("ID пацієнта: ");
                     if (!int.TryParse(Console.ReadLine(), out int patientId))
@@ -168,6 +199,30 @@ public class Program
                     Appointment[] patientAppointments = clinic.Appointments.GetByPatient(patientId);
                     int cancelledCount = AppointmentManager.CancelAll(patientAppointments, reason);
                     Console.WriteLine($"Скасовано записів: {cancelledCount}");
+                    break;
+
+                case 9:
+                    Console.WriteLine("1. Термінові");
+                    Console.WriteLine("2. Консультації спеціаліста");
+                    Console.WriteLine("3. Звичайні");
+                    Console.Write("Оберіть: ");
+                    string typeChoice = Console.ReadLine() ?? "";
+
+                    switch (typeChoice)
+                    {
+                        case "1":
+                            clinic.Appointments.DisplayList(clinic.Appointments.GetUrgent());
+                            break;
+                        case "2":
+                            clinic.Appointments.DisplayList(clinic.Appointments.GetSpecialist());
+                            break;
+                        case "3":
+                            clinic.Appointments.DisplayList(clinic.Appointments.GetRegular());
+                            break;
+                        default:
+                            Console.WriteLine("Невірний вибір типу прийому.");
+                            break;
+                    }
                     break;
             }
         }
@@ -187,7 +242,6 @@ public class Program
 
             switch (choice)
             {
-
                 case 5:
                     Console.Write("ID лікаря: ");
                     if (!int.TryParse(Console.ReadLine(), out int doctorId))
