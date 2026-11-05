@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using ClinicApp.Enums;
 using ClinicApp.Utils;
@@ -5,7 +6,7 @@ using ClinicApp.Interfaces;
 
 namespace ClinicApp.Models;
 
-public class Appointment : IPayable, ICancellable
+public class Appointment : IPayable, ICancellable, IIdentifiable
 {
     private static int _nextId = 1;
 
@@ -28,6 +29,7 @@ public class Appointment : IPayable, ICancellable
             _durationMinutes = value;
         }
     }
+
     public AppointmentStatus Status { get; private set; }
     public string Notes { get; private set; }
 

@@ -1,6 +1,7 @@
 using System;
 using ClinicApp.Models;
 using ClinicApp.Managers;
+
 namespace ClinicApp;
 
 public class Clinic
@@ -11,6 +12,7 @@ public class Clinic
     public AppointmentManager Appointments { get; }
     public MedicalRecordManager MedicalRecords { get; }
     public BillingManager Billing { get; }
+    public WaitingQueue<Patient> WaitingRoom { get; }
 
     public Clinic(string name)
     {
@@ -20,6 +22,7 @@ public class Clinic
         MedicalRecords = new MedicalRecordManager();
         Appointments = new AppointmentManager(Patients, Doctors);
         Billing = new BillingManager(Appointments);
+        WaitingRoom = new WaitingQueue<Patient>();
     }
 
     public void DisplaySchedule(DateTime date)

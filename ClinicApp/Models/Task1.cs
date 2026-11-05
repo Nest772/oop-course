@@ -1,60 +1,64 @@
+using System;
 using ClinicApp.Enums;
 using ClinicApp.Utils;
+using ClinicApp.Interfaces;
+
 namespace ClinicApp.Models;
 
-public class Patient
+public class Patient : IIdentifiable
 {
     private static int _nextId = 1;
 
     public int Id { get; }
 
-  private string _firstName = "";
+    private string _firstName = "";
 
-public string FirstName
-{
-    get => _firstName;
-    set
+    public string FirstName
     {
-        ClinicValidator.ValidateName(value, nameof(FirstName));
-        _firstName = value;
+        get => _firstName;
+        set
+        {
+            ClinicValidator.ValidateName(value, nameof(FirstName));
+            _firstName = value;
+        }
     }
-}
 
-  private string _lastName = "";
+    private string _lastName = "";
 
-public string LastName
-{
-    get => _lastName;
-    set
+    public string LastName
     {
-        ClinicValidator.ValidateName(value, nameof(LastName));
-        _lastName = value;
+        get => _lastName;
+        set
+        {
+            ClinicValidator.ValidateName(value, nameof(LastName));
+            _lastName = value;
+        }
     }
-}
 
-private DateTime _dateOfBirth;
+    private DateTime _dateOfBirth;
 
-public DateTime DateOfBirth
-{
-    get => _dateOfBirth;
-    set
+    public DateTime DateOfBirth
     {
-        ClinicValidator.ValidateDate(value, nameof(DateOfBirth));
-        _dateOfBirth = value;
+        get => _dateOfBirth;
+        set
+        {
+            ClinicValidator.ValidateDate(value, nameof(DateOfBirth));
+            _dateOfBirth = value;
+        }
     }
-}
 
-  private string _phone = "";
+    private string _phone = "";
 
-public string Phone
-{
-    get => _phone;
-    set
+    public string Phone
     {
-        ClinicValidator.ValidatePhone(value);
-        _phone = value;
+        get => _phone;
+        set
+        {
+            ClinicValidator.ValidatePhone(value);
+            _phone = value;
+        }
     }
-}
+
     public BloodType BloodType { get; set; }
     public string Email { get; set; } = string.Empty;
 
@@ -108,12 +112,12 @@ public string Phone
         return "senior";
     }
 
-public override string ToString()
-{
-    string formattedAge = ClinicFormatter.FormatAge(Age);
-    string formattedBlood = ClinicFormatter.FormatBloodType(BloodType);
-    string formattedPhone = ClinicFormatter.FormatPhone(Phone);
+    public override string ToString()
+    {
+        string formattedAge = ClinicFormatter.FormatAge(Age);
+        string formattedBlood = ClinicFormatter.FormatBloodType(BloodType);
+        string formattedPhone = ClinicFormatter.FormatPhone(Phone);
 
-    return $"[{Id}] {FullName} | Age: {formattedAge} ({GetAgeCategory()}) | Bloodtype: {formattedBlood} | Тел: {formattedPhone}";
-}
+        return $"[{Id}] {FullName} | Age: {formattedAge} ({GetAgeCategory()}) | Bloodtype: {formattedBlood} | Тел: {formattedPhone}";
+    }
 }

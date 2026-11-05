@@ -1,85 +1,88 @@
+using System;
 using ClinicApp.Enums;
 using ClinicApp.Utils;
 using ClinicApp.Interfaces;
+
 namespace ClinicApp.Models;
 
-public class Doctor : ISchedulable
+public class Doctor : ISchedulable, IIdentifiable
 {
     private static int _nextId = 1;
 
     public int Id { get; }
 
-  private string _firstName = "";
+    private string _firstName = "";
 
-public string FirstName
-{
-    get => _firstName;
-    set
+    public string FirstName
     {
-        ClinicValidator.ValidateName(value, nameof(FirstName));
-        _firstName = value;
-    }
-}
-
-private string _lastName = "";
-
-public string LastName
-{
-    get => _lastName;
-    set
-    {
-        ClinicValidator.ValidateName(value, nameof(LastName));
-        _lastName = value;
-    }
-}
-
-public bool CanSchedule(DateTime at)
-{
-    return CanAcceptAt(at.Hour);
-}
-
-public DateTime[] GetAvailableSlots(DateTime date, int slotCount)
-{
-    ClinicValidator.ValidatePositive(slotCount, nameof(slotCount));
-
-    int count = Math.Min(slotCount, Schedule.HoursPerDay);
-
-    DateTime[] slots = new DateTime[count];
-
-    for (int i = 0; i < count; i++)
-    {
-        slots[i] = date.Date.AddHours(Schedule.Start + i);
+        get => _firstName;
+        set
+        {
+            ClinicValidator.ValidateName(value, nameof(FirstName));
+            _firstName = value;
+        }
     }
 
-    return slots;
-}
+    private string _lastName = "";
 
-private string _licenseNumber = "";
-
-public string LicenseNumber
-{
-    get => _licenseNumber;
-    set
+    public string LastName
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException(
-                "License number cannot be empty.",
-                nameof(LicenseNumber));
-
-        _licenseNumber = value;
+        get => _lastName;
+        set
+        {
+            ClinicValidator.ValidateName(value, nameof(LastName));
+            _lastName = value;
+        }
     }
-}
 
-private string _phone = "";
-public string Phone
-{
-    get => _phone;
-    set
+    public bool CanSchedule(DateTime at)
     {
-        ClinicValidator.ValidatePhone(value);
-        _phone = value;
+        return CanAcceptAt(at.Hour);
     }
-}
+
+    public DateTime[] GetAvailableSlots(DateTime date, int slotCount)
+    {
+        ClinicValidator.ValidatePositive(slotCount, nameof(slotCount));
+
+        int count = Math.Min(slotCount, Schedule.HoursPerDay);
+
+        DateTime[] slots = new DateTime[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            slots[i] = date.Date.AddHours(Schedule.Start + i);
+        }
+
+        return slots;
+    }
+
+    private string _licenseNumber = "";
+
+    public string LicenseNumber
+    {
+        get => _licenseNumber;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException(
+                    "License number cannot be empty.",
+                    nameof(LicenseNumber));
+
+            _licenseNumber = value;
+        }
+    }
+
+    private string _phone = "";
+    public string Phone
+    {
+        get => _phone;
+        set
+        {
+            ClinicValidator.ValidatePhone(value);
+            _phone = value;
+        }
+    }
+
     public Speciality Speciality { get; set; }
 
     public WorkSchedule Schedule { get; set; }
