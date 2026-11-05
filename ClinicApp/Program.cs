@@ -26,24 +26,6 @@ public class Program
         Console.WriteLine($"Через UrgentAppointment: {urgentAppt.GetDescription()} | пріоритет {urgentAppt.GetPriority()}");
         Console.WriteLine();
 
-        /*
-        ВІДПОВІДІ НА ЗАПИТАННЯ:
-
-        1. Чому GetDescription() через змінну типу Appointment дає опис термінового прийому?
-           Оскільки метод GetDescription() є віртуальним (virtual у батьківському класі та override у підкласі),
-           C# застосовує динамічний поліморфізм. Виклик методу визначається реальним типом об'єкта в пам'яті (UrgentAppointment),
-           а не типом змінної.
-
-        2. Чому GetPriority() через ту саму змінну повертає 3, хоча об'єкт — UrgentAppointment?
-           Метод GetPriority() не є віртуальним у базовому класі. У підкласі UrgentAppointment він оголошений з модифікатором new,
-           що лише приховує (shadows) метод батька, а не перевизначає його. При виклику невіртуального або прихованого через new методу
-           C# використовує статичне зв'язування за типом змінної (Appointment), тому викликається версія базового класу.
-
-        3. Що треба змінити в Appointment і UrgentAppointment, щоб GetPriority() теж працював поліморфно?
-           У класі Appointment слід позначити метод як віртуальний: public virtual int GetPriority() => 3;
-           А в класі UrgentAppointment замінити модифікатор new на override: public override int GetPriority() => 1;
-        */
-
         while (true)
         {
             ShowMainMenu();
@@ -79,6 +61,9 @@ public class Program
                     BillingMenu(clinic);
                     break;
                 case 6:
+                    WaitingRoomMenu(clinic);
+                    break;
+                case 7:
                     clinic.GenerateReport();
                     break;
             }
@@ -88,16 +73,101 @@ public class Program
     private static void ShowMainMenu()
     {
         Console.WriteLine("╔══════════════════════════════════════════════╗");
-        Console.WriteLine("║            МЕДИЧНА КЛІНІКА                   ║");
+        Console.WriteLine("║                 МЕДИЧНА КЛІНІКА              ║");
         Console.WriteLine("╠══════════════════════════════════════════════╣");
-        Console.WriteLine("║  1. Пацієнти       — реєстрація, пошук       ║");
-        Console.WriteLine("║  2. Лікарі         — персонал, розклад       ║");
-        Console.WriteLine("║  3. Записи         — прийоми, скасування     ║");
-        Console.WriteLine("║  4. Медична картка — діагнози, рецепти       ║");
-        Console.WriteLine("║  5. Рахунки        — оплата, борги           ║");
-        Console.WriteLine("║  6. Звіт           — загальна статистика     ║");
+        Console.WriteLine("║  1. Пацієнти        — реєстрація, пошук       ║");
+        Console.WriteLine("║  2. Лікарі          — персонал, розклад       ║");
+        Console.WriteLine("║  3. Записи          — прийоми, скасування     ║");
+        Console.WriteLine("║  4. Медична картка  — діагнози, рецепти       ║");
+        Console.WriteLine("║  5. Рахунки         — оплата, борги           ║");
+        Console.WriteLine("║  6. Черга           — очікування, прийом      ║");
+        Console.WriteLine("║  7. Звіт            — загальна статистика     ║");
         Console.WriteLine("║  0. Вийти                                    ║");
         Console.WriteLine("╚══════════════════════════════════════════════╝");
+    }
+
+    private static void WaitingRoomMenu(Clinic clinic)
+    {
+        while (true)
+        {
+            Console.WriteLine("\n── Черга ───────────────────────");
+            Console.WriteLine("1. Додати пацієнта до черги  2. Прийняти першого  3. Хто перший?  4. Переглянути всю чергу  0. Назад");
+            Console.Write("Оберіть: ");
+
+            string input = Console.ReadLine() ?? "";
+            if (!int.TryParse(input, out int choice))
+            {
+                continue;
+            }
+
+            if (choice == 0)
+            {
+                break;
+            }
+
+            switch (choice)
+            {
+                case 1:
+                    Console.Write("ID пацієнта: ");
+                    if (!int.TryParse(Console.ReadLine(), out int patientId))
+                    {
+                        Console.WriteLine("Некоректний ID.");
+                        break;
+                    }
+
+                    Patient? patient = clinic.Patients.FindById(patientId);
+                    if (patient == null)
+                    {
+                        Console.WriteLine("Пацієнта не знайдено.");
+                    }
+                    else
+                    {
+                        clinic.WaitingRoom.Enqueue(patient);
+                        Console.WriteLine($"Пацієнта [{patient.Id}] {patient.FullName} додано до черги.");
+                    }
+                    break;
+
+                case 2:
+                    try
+                    {
+                        Patient dequeuedPatient = clinic.WaitingRoom.Dequeue();
+                        Console.WriteLine($"Прийнято: {dequeuedPatient.FullName}. У черзі лишилось: {clinic.WaitingRoom.Count}");
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        Console.WriteLine("Черга порожня.");
+                    }
+                    break;
+
+                case 3:
+                    try
+                    {
+                        Patient firstPatient = clinic.WaitingRoom.Peek();
+                        Console.WriteLine($"Перший у черзі: {firstPatient.FullName}");
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        Console.WriteLine("Черга порожня.");
+                    }
+                    break;
+
+                case 4:
+                    Patient[] queueArray = clinic.WaitingRoom.ToArray();
+                    if (queueArray.Length == 0)
+                    {
+                        Console.WriteLine("Черга порожня.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("=== Поточний стан черги ===");
+                        for (int i = 0; i < queueArray.Length; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {queueArray[i].FullName}");
+                        }
+                    }
+                    break;
+            }
+        }
     }
 
     private static void BillingMenu(Clinic clinic)
