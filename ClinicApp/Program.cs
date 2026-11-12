@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using ClinicApp.Comparators;
 using ClinicApp.Interfaces;
 using ClinicApp.Managers;
 using ClinicApp.Models;
@@ -66,6 +68,9 @@ public class Program
                 case 7:
                     clinic.GenerateReport();
                     break;
+                case 8:
+                    AnalyticsMenu(clinic);
+                    break;
             }
         }
     }
@@ -75,15 +80,115 @@ public class Program
         Console.WriteLine("╔══════════════════════════════════════════════╗");
         Console.WriteLine("║                 МЕДИЧНА КЛІНІКА              ║");
         Console.WriteLine("╠══════════════════════════════════════════════╣");
-        Console.WriteLine("║  1. Пацієнти        — реєстрація, пошук       ║");
-        Console.WriteLine("║  2. Лікарі          — персонал, розклад       ║");
-        Console.WriteLine("║  3. Записи          — прийоми, скасування     ║");
-        Console.WriteLine("║  4. Медична картка  — діагнози, рецепти       ║");
-        Console.WriteLine("║  5. Рахунки         — оплата, борги           ║");
-        Console.WriteLine("║  6. Черга           — очікування, прийом      ║");
-        Console.WriteLine("║  7. Звіт            — загальна статистика     ║");
+        Console.WriteLine("║  1. Пацієнти        — реєстрація, пошук      ║");
+        Console.WriteLine("║  2. Лікарі          — персонал, розклад      ║");
+        Console.WriteLine("║  3. Записи          — прийоми, скасування    ║");
+        Console.WriteLine("║  4. Медична картка  — діагнози, рецепти      ║");
+        Console.WriteLine("║  5. Рахунки         — оплата, борги          ║");
+        Console.WriteLine("║  6. Черга           — очікування, прийом     ║");
+        Console.WriteLine("║  7. Звіт            — загальна статистика    ║");
+        Console.WriteLine("║  8. Аналітика       — рейтинги, виручка      ║");
         Console.WriteLine("║  0. Вийти                                    ║");
         Console.WriteLine("╚══════════════════════════════════════════════╝");
+    }
+
+    private static void AnalyticsMenu(Clinic clinic)
+    {
+        while (true)
+        {
+            Console.WriteLine("\n── Аналітика ───────────────────");
+            Console.WriteLine("  1. Лікарі за навантаженням");
+            Console.WriteLine("  2. Лікарі за виручкою");
+            Console.WriteLine("  3. Лікарі за іменем");
+            Console.WriteLine("  4. Пацієнти за кількістю візитів");
+            Console.WriteLine("  5. Пацієнти за витратами");
+            Console.WriteLine("  0. Назад");
+            Console.Write("Оберіть: ");
+
+            string input = Console.ReadLine() ?? "";
+            if (!int.TryParse(input, out int choice))
+            {
+                continue;
+            }
+
+            if (choice == 0)
+            {
+                break;
+            }
+
+            switch (choice)
+            {
+                case 1:
+                {
+                    List<DoctorStats> stats = CollectDoctorStats(clinic);
+                    stats.Sort();
+                    DisplayStatsList(stats);
+                    break;
+                }
+                case 2:
+                {
+                    List<DoctorStats> stats = CollectDoctorStats(clinic);
+                    stats.Sort(new DoctorStatsByRevenue());
+                    DisplayStatsList(stats);
+                    break;
+                }
+                case 3:
+                {
+                    List<DoctorStats> stats = CollectDoctorStats(clinic);
+                    stats.Sort(new DoctorStatsByName());
+                    DisplayStatsList(stats);
+                    break;
+                }
+                case 4:
+                {
+                    List<PatientStats> stats = CollectPatientStats(clinic);
+                    stats.Sort();
+                    DisplayStatsList(stats);
+                    break;
+                }
+                case 5:
+                {
+                    List<PatientStats> stats = CollectPatientStats(clinic);
+                    stats.Sort(new PatientStatsBySpent());
+                    DisplayStatsList(stats);
+                    break;
+                }
+            }
+        }
+    }
+
+    private static List<DoctorStats> CollectDoctorStats(Clinic clinic)
+    {
+        List<DoctorStats> result = new List<DoctorStats>();
+        foreach (DoctorStats item in clinic.Analytics.ComputeDoctorStats())
+        {
+            result.Add(item);
+        }
+        return result;
+    }
+
+    private static List<PatientStats> CollectPatientStats(Clinic clinic)
+    {
+        List<PatientStats> result = new List<PatientStats>();
+        foreach (PatientStats item in clinic.Analytics.ComputePatientStats())
+        {
+            result.Add(item);
+        }
+        return result;
+    }
+
+    private static void DisplayStatsList<T>(List<T> items)
+    {
+        if (items.Count == 0)
+        {
+            Console.WriteLine("Даних для відображення немає.");
+            return;
+        }
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            Console.WriteLine(items[i]);
+        }
     }
 
     private static void WaitingRoomMenu(Clinic clinic)
@@ -199,7 +304,7 @@ public class Program
                     }
 
                     IPayable[] unpaidByPatient = clinic.Billing.GetUnpaidByPatient(patientId);
-                    
+
                     if (unpaidByPatient.Length > 0)
                     {
                         Console.WriteLine($"Неоплачені записи пацієнта #{patientId}:");

@@ -12,6 +12,7 @@ public class Clinic
     public AppointmentManager Appointments { get; }
     public MedicalRecordManager MedicalRecords { get; }
     public BillingManager Billing { get; }
+    public AnalyticsManager Analytics { get; }
     public WaitingQueue<Patient> WaitingRoom { get; }
 
     public Clinic(string name)
@@ -22,6 +23,7 @@ public class Clinic
         MedicalRecords = new MedicalRecordManager();
         Appointments = new AppointmentManager(Patients, Doctors);
         Billing = new BillingManager(Appointments);
+        Analytics = new AnalyticsManager(Appointments, Doctors, Patients);
         WaitingRoom = new WaitingQueue<Patient>();
     }
 
@@ -38,7 +40,7 @@ public class Clinic
         Console.WriteLine($"║  Report — {Name}");
         Console.WriteLine("╠══════════════════════════════════════════════╣");
         Console.WriteLine($"║  Patient:          {Patients.Count}");
-        Console.WriteLine($"║  Doctors:            {Doctors.Count}");
+        Console.WriteLine($"║  Doctors:          {Doctors.Count}");
 
         Appointment[] upcoming = Appointments.GetUpcoming();
         Console.WriteLine($"║  Future appointments:  {upcoming.Length}");
