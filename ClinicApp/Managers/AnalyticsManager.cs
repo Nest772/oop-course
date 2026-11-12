@@ -40,9 +40,9 @@ public class AnalyticsManager
                     count++;
                     totalRevenue += appointment.GetCost();
 
-                    if (appointment.Date > lastDate)
+                    if (appointment.ScheduledAt > lastDate)
                     {
-                        lastDate = appointment.Date;
+                        lastDate = appointment.ScheduledAt;
                     }
                 }
             }
@@ -76,9 +76,9 @@ public class AnalyticsManager
                     count++;
                     totalSpent += appointment.GetCost();
 
-                    if (appointment.Date > lastDate)
+                    if (appointment.ScheduledAt > lastDate)
                     {
-                        lastDate = appointment.Date;
+                        lastDate = appointment.ScheduledAt;
                     }
                 }
             }
